@@ -31,7 +31,7 @@
 #include "../GB.h"
 #include "../options.h"
 
-#include "Renderer.h"
+#include "renderer.h"
 #include "palette.h"
 
 #include "filters/filters.h"

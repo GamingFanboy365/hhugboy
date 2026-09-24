@@ -816,7 +816,7 @@ void sgb_execute_command()
                   copy_line16((unsigned short*)GB->gfx_buffer,(unsigned short*)GB->gfx_buffer_old,160*144);
                } else
                {
-                  copy_line32((unsigned long*)GB->gfx_buffer,(unsigned long*)GB->gfx_buffer_old,160*144);
+                  copy_line32((DWORD*)GB->gfx_buffer,(DWORD*)GB->gfx_buffer_old,160*144);
                }
 
                (renderer.*renderer.drawScreen)();

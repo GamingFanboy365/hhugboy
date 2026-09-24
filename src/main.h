@@ -25,7 +25,13 @@
 #define UNICODE
 
 #include "ui/menu.h"
+#ifdef HHUGBOY_SDL
+#include "platform/sdl/SdlRenderer.h"
+typedef SdlRenderer PlatformRenderer;
+#else
 #include "rendering/directdraw.h"
+typedef DirectDraw PlatformRenderer;
+#endif
 #include "config.h"
 
 extern bool paused;
@@ -35,7 +41,7 @@ extern int timer_id;
 
 extern menu emuMenu;
 
-extern DirectDraw renderer;
+extern PlatformRenderer renderer;
 extern Palette palette;
 
 extern int current_controller;

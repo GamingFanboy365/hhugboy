@@ -31,6 +31,11 @@
 
 #define ASM_JUMP_ALIGN ".p2align 4\n"
 
+// The MMX versions are written in 32-bit x86 assembly
+#if defined(__i386__) || defined(_M_IX86)
+#define SCALE2X_HAVE_MMX
+#endif
+
 static inline void scale2x_16_def_single(WORD *dst, const WORD* src0, const WORD* src1, const WORD* src2, unsigned count) 
 {
 	/* first pixel */
@@ -109,6 +114,8 @@ static inline void scale2x_32_def_single(DWORD *dst, const DWORD *src0, const DW
 	dst[1] = src1[0];
 }
 
+
+#ifdef SCALE2X_HAVE_MMX
 
 static void internal_scale2x_16_mmx_single(WORD* dst, const WORD* src0, const WORD* src1, const WORD* src2, unsigned count) {
   /* always do the first and last run */
@@ -876,6 +883,24 @@ static void internal_scale2x_32_mmx(DWORD* dst0, DWORD* dst1, const DWORD* src0,
   internal_scale2x_32_mmx_single(dst0, src0, src1, src2, count);
   internal_scale2x_32_mmx_single(dst1, src2, src1, src0, count);
 }
+
+#else // !SCALE2X_HAVE_MMX
+
+void scale2x_16_def(WORD* dst0, WORD* dst1, const WORD* src0, const WORD* src1, const WORD* src2, unsigned count);
+void scale2x_32_def(DWORD* dst0, DWORD* dst1, const DWORD* src0, const DWORD* src1, const DWORD* src2, unsigned count);
+
+// No MMX on this architecture, fall back to the C implementation
+static void internal_scale2x_16_mmx(WORD* dst0, WORD* dst1, const WORD* src0, const WORD* src1, const WORD* src2, unsigned count)
+{
+  scale2x_16_def(dst0, dst1, src0, src1, src2, count);
+}
+
+static void internal_scale2x_32_mmx(DWORD* dst0, DWORD* dst1, const DWORD* src0, const DWORD* src1, const DWORD* src2, unsigned count)
+{
+  scale2x_32_def(dst0, dst1, src0, src1, src2, count);
+}
+
+#endif // SCALE2X_HAVE_MMX
 
 void scale2x_16_def(WORD* dst0, WORD* dst1, const WORD* src0, const WORD* src1, const WORD* src2, unsigned count)
 {

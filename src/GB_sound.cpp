@@ -21,8 +21,7 @@
 */
 #define WIN32_LEAN_AND_MEAN
 
-#include <memory.h>
-#include <windows.h>
+#include <string.h>
 #include <stdio.h>
 
 #include "sound.h"
@@ -110,13 +109,8 @@ int CYCLES_SOUND = 96;
 //int cycles_sound = CYCLES_SOUND;
 int sound_quality = 1;
 
-int channel_n = 0;
-
-FSOUND_SAMPLE* FSbuffer;
-
 const int sound_buffer_len = 1470*2; 
 int sound_buffer_total_len = 14700*2;
-int sound_next_position = 0;
 
 void gb_system::sound_register(register unsigned short address,register byte data)
 {
@@ -764,42 +758,7 @@ if(options->sound_on > 0 && this == GB1)
       sound_index = 0;
       sound_buffer_index = 0;
       
-      void* ptr1 = NULL; 
-      unsigned int bytes1 = 0; 
-      void* ptr2 = NULL; 
-      unsigned int bytes2 = 0; 
-               
-      if(!speedup && FSOUND_IsPlaying(channel_n) == TRUE)
-      {
-         unsigned int play = 0;
-                  
-         for(;;)
-         {
-            play = FSOUND_GetCurrentPosition(channel_n);
-            if(!play) 
-               break;
-            play <<= 2;
-            if((play < sound_next_position) || (play > sound_next_position+sound_buffer_len))
-               break;
-            
-           /* if(options->reduce_cpu_usage)
-            {
-               Sleep(1);
-            }*/
-         } 
-      }
-         
-      if(FSOUND_Sample_Lock(FSbuffer,sound_next_position,sound_buffer_len,&ptr1,&ptr2,&bytes1,&bytes2) == FALSE)
-         return;
-
-      sound_next_position += sound_buffer_len;
-      sound_next_position = sound_next_position % sound_buffer_total_len;
-
-      memcpy(ptr1,final_wave,bytes1);
-      if(ptr2 != NULL)
-         memcpy(ptr2,final_wave+bytes1,bytes2);
-      
-      FSOUND_Sample_Unlock(FSbuffer,ptr1,ptr2,bytes1,bytes2);
+      sound_output_write(final_wave,sound_buffer_len);
    }
 }
 }
@@ -813,7 +772,7 @@ void gb_system::sound_reset()
    sound_buffer_index = 0;
    sound_level1 = 7;
    sound_level2 = 7;
-   sound_next_position = 0;
+   sound_output_reset();
    
    channel1_on = 0;
    channel1_ATL = 0;

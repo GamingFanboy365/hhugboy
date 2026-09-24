@@ -24,16 +24,20 @@
 #define UNICODE
 #define WIN32_LEAN_AND_MEAN
 
-#include <windows.h>
+#include "platform/compat.h"
 #include <stdio.h>
 #include <string>
 
 #include <stdlib.h>
 
 #include "config.h"
-#include "ui/dialogs.h"
 
 using namespace std;
+
+// debug_print and debug_win are provided by the frontend on non-Windows platforms
+#ifndef HHUGBOY_SDL
+
+#include "ui/dialogs.h"
 
 void debug_print(const char* message)
 {
@@ -58,6 +62,8 @@ void debug_win(const wchar_t* message)
 {
     addDebugLogMessage(message);
 }
+
+#endif // HHUGBOY_SDL
 
 void debug_log(const string message)
 {

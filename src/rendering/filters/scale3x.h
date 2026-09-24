@@ -31,8 +31,7 @@ typedef unsigned char scale3x_uint8;
 typedef unsigned short scale3x_uint16;
 typedef unsigned scale3x_uint32;
 
-typedef unsigned long DWORD;
-typedef unsigned short WORD;
+#include "../../platform/wintypes.h"
 
 class Scale3x: public Filter {
     public:
