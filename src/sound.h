@@ -24,7 +24,6 @@
 
 #include "types.h"
 #include "debug.h"
-#include "fmod/fmod.h"
 
 #define NR10 0xff10
 #define NR11 0xff11
@@ -60,10 +59,20 @@ const int LOWPASS_LEVEL2 = 2;
 
 extern int CYCLES_SOUND;
 //extern int cycles_sound;
-extern FSOUND_SAMPLE* FSbuffer;
 extern int sound_buffer_total_len;
 extern int sound_quality;
+
+// Audio output, implemented by the frontend (FMOD on Windows, SDL elsewhere).
+// Receives each finished block of signed 16-bit stereo 44100Hz samples.
+void sound_output_write(signed short* samples, int bytes);
+// Called when the sound hardware is reset
+void sound_output_reset();
+
+#ifndef HHUGBOY_SDL
+#include "fmod/fmod.h"
+extern FSOUND_SAMPLE* FSbuffer;
 extern int channel_n;
+#endif
 
 extern byte sound_wave_pattern[4][32];
 

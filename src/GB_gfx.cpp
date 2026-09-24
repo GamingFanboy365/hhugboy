@@ -32,6 +32,7 @@
 
 #include "main.h"
 
+#include <cstring> // needed by png++ on some platforms
 #include <png.hpp>
 
 unsigned short line_buffer[160];

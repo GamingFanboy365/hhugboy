@@ -1,4 +1,4 @@
-#include <windows.h>
+#include "../platform/wintypes.h"
 
 class Palette {
     public:

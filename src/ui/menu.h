@@ -296,6 +296,19 @@
 #define IDM_UNLVF001A       IDM_GROUP_UNL | 0x12
 #define IDM_UNLSKOBLEE8     IDM_GROUP_UNL | 0x13
 
+#ifdef HHUGBOY_SDL
+
+// The SDL frontend has no menu bar (yet), so menu state changes are ignored
+class menu
+{
+	public:
+		void checkOption(int option) {}
+		void uncheckOption(int option) {}
+		void setText(int option, wchar_t* newText) {}
+};
+
+#else
+
 #define WIN32_LEAN_AND_MEAN
 #define UNICODE
 #include <windows.h>
@@ -316,6 +329,8 @@ class menu
 		HMENU menuBar;
 	    
 };
+
+#endif // HHUGBOY_SDL
 
 
 #endif // MENU_H

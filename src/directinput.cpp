@@ -41,7 +41,6 @@ extern int speedup;
 extern int sizen_w,sizen_h; 
 
 int old_sound_on = 0;
-int soft_reset = 0;
 int joystick_device_index = -1;
 
 IDirectInput7* DI = NULL; 
@@ -62,10 +61,6 @@ void Kill_DI()
    
    SafeRelease(DI);
 }
-
-#define KEYDOWN(name,key) (name[key] & 0x80) 
-
-int autofire_delay[4][4];
 
 void check_joystick_input()
 {
@@ -207,140 +202,9 @@ void Check_KBInput(int i)
       return; 
    } 
    
-   if(soft_reset)
-   {
-      if(soft_reset == 1)
-      {
-         GB1->button_pressed[B_START] = GB1->button_pressed[B_SELECT] = GB1->button_pressed[B_A] = GB1->button_pressed[B_B] = 0;
-      } else
-      {
-         GB2->button_pressed[B_START] = GB2->button_pressed[B_SELECT] = GB2->button_pressed[B_A] = GB2->button_pressed[B_B] = 0;
-      }
-
-      soft_reset = 0;
+   if(!apply_keyboard_state(buffer, i))
       return;
-   }         
-      
-   if(KEYDOWN(buffer,options->multi_key_config[i][BUTTON_TURBO_A]))
-   {
-      if(--autofire_delay[i][0] <= 0)
-      {
-         autofire_delay[i][0] = options->autofire_speed;
-         GB->button_pressed[B_A] = !GB->button_pressed[B_A];
-      }
-   }
-   else
-   if(KEYDOWN(buffer,options->multi_key_config[i][BUTTON_A]))
-      GB->button_pressed[B_A] = 0;           
-   else
-   {
-      GB->button_pressed[B_A] = 1;
-      autofire_delay[i][0] = 0;
-   }
-      
-   if(KEYDOWN(buffer,options->multi_key_config[i][BUTTON_TURBO_B]))
-   {
-      if(--autofire_delay[i][1] <= 0)
-      {
-         autofire_delay[i][1] = options->autofire_speed;
-         GB->button_pressed[B_B] = !GB->button_pressed[B_B];
-      }
-   }
-   else                 
-   if(KEYDOWN(buffer,options->multi_key_config[i][BUTTON_B]))
-      GB->button_pressed[B_B] = 0;           
-   else
-   {
-      GB->button_pressed[B_B] = 1;
-      autofire_delay[i][1] = 0;
-   }
-         
-   if(KEYDOWN(buffer,options->multi_key_config[i][BUTTON_LEFT]))
-   {                       
-      GB->button_pressed[B_LEFT] = 0;
-      if(!options->opposite_directions_allowed) GB->button_pressed[B_RIGHT] = 1;
-   }
-   else
-      GB->button_pressed[B_LEFT] = 1; 
-         
-   if(KEYDOWN(buffer,options->multi_key_config[i][BUTTON_RIGHT]))
-   {
-      GB->button_pressed[B_RIGHT] = 0;                       
-      if(!options->opposite_directions_allowed) GB->button_pressed[B_LEFT] = 1;
-   }
-   else  
-      GB->button_pressed[B_RIGHT] = 1; 
-          
-   if(KEYDOWN(buffer,options->multi_key_config[i][BUTTON_UP]))
-   {
-      GB->button_pressed[B_UP] = 0;                       
-      if(!options->opposite_directions_allowed) GB->button_pressed[B_DOWN] = 1;
-   }
-   else    
-      GB->button_pressed[B_UP] = 1;   
-        
-   if(KEYDOWN(buffer,options->multi_key_config[i][BUTTON_DOWN]))
-   {
-      GB->button_pressed[B_DOWN] = 0;                       
-      if(!options->opposite_directions_allowed) GB->button_pressed[B_UP] = 1;
-   }
-   else    
-      GB->button_pressed[B_DOWN] = 1;     
 
-   if(KEYDOWN(buffer,options->multi_key_config[i][BUTTON_TURBO_START]))
-   {
-      if(--autofire_delay[i][2] <= 0)
-      {
-         autofire_delay[i][2] = options->autofire_speed;
-         GB->button_pressed[B_START] = !GB->button_pressed[B_START];
-      }
-   }
-   else
-   if(KEYDOWN(buffer,options->multi_key_config[i][BUTTON_START]))
-      GB->button_pressed[B_START] = 0;           
-   else
-   {
-      GB->button_pressed[B_START] = 1;
-      autofire_delay[i][2] = 0;
-   }
-
-   if(KEYDOWN(buffer,options->multi_key_config[i][BUTTON_TURBO_SELECT]))
-   {
-      if(--autofire_delay[i][3] <= 0)
-      {
-         autofire_delay[i][3] = options->autofire_speed;
-         GB->button_pressed[B_SELECT] = !GB->button_pressed[B_SELECT];
-      }
-   }
-   else
-   if(KEYDOWN(buffer,options->multi_key_config[i][BUTTON_SELECT]))
-      GB->button_pressed[B_SELECT] = 0;           
-   else
-   {
-      GB->button_pressed[B_SELECT] = 1;
-      autofire_delay[i][3] = 0;
-   }
-         
-   if(KEYDOWN(buffer,options->special_keys[BUTTON_SENSOR_UP]))
-      sensor_dir[SENSOR_UP] = 1;             
-   else     
-      sensor_dir[SENSOR_UP] = 0;   
-      
-   if(KEYDOWN(buffer,options->special_keys[BUTTON_SENSOR_DOWN]))
-      sensor_dir[SENSOR_DOWN] = 1;             
-   else               
-      sensor_dir[SENSOR_DOWN] = 0;  
-                   
-   if(KEYDOWN(buffer,options->special_keys[BUTTON_SENSOR_LEFT]))
-      sensor_dir[SENSOR_LEFT] = 1;             
-   else             
-      sensor_dir[SENSOR_LEFT] = 0;     
-                
-   if(KEYDOWN(buffer,options->special_keys[BUTTON_SENSOR_RIGHT]))
-      sensor_dir[SENSOR_RIGHT] = 1;             
-   else                                                                                  
-      sensor_dir[SENSOR_RIGHT] = 0;   
-   
    if(di_joystick != NULL && i == options->use_joystick_input)
       check_joystick_input();
       

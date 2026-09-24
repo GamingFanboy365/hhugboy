@@ -23,3 +23,7 @@ Thumbs.db
 cb/*
 cmake-build-debug/*
 cmake-build-release/*
+bin/hhugboy
+bin/hhugboy-debug
+build/
+build-*/

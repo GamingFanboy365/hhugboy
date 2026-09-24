@@ -2,7 +2,12 @@
 #ifndef HHUGBOY_LINKERWRANGLER_H
 #define HHUGBOY_LINKERWRANGLER_H
 
+#ifdef _WIN32
 #include <windef.h>
+#else
+#define __cdecl
+typedef void* HINSTANCE;
+#endif
 #include "../../types.h"
 
 #define READ_ROM0_THRU_LINKER true

@@ -23,7 +23,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <windows.h>
+#include "platform/compat.h"
 
 #include "cheats.h"
 

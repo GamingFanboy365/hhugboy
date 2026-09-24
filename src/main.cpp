@@ -50,41 +50,16 @@ using namespace std;
 
 #include "ui/window.h"
 
-gb_system* GB = NULL;
-gb_system* GB1 = NULL;
-gb_system* GB2 = NULL;
-
-const wchar_t* prg_version = L"1.4.2";
-
 // Window stuff? ----------------------------------------
-
-wchar_t w_emu_title[] = L"hhugboy";
 
 int timer_id = 0;
 
 DirectDraw renderer(&hwnd);
 
-Palette palette;
-
 // Options ----------------------------------------------
-bool paused = false;
-bool menupause = false;
-
-int control_pressed = 0; // control key pressed 
-
-int current_controller = 0; // currently changing which controller? 
-
-int speedup = 0;
-
-program_configuration* options = NULL;
-
-wstring gb1_loaded_file_name;
-
 #ifdef ALLOW_DEBUG
 bool debug = false;
 #endif
-
-int ramsize[10] = { 0, 2, 8, 32, 128, 64,64,64,8, 256 }; // KBytes
 
 int mainLoop()
 {

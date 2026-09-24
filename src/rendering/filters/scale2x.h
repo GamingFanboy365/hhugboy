@@ -24,8 +24,7 @@
 #ifndef SCALE2X_H
 #define SCALE2X_H
 
-typedef unsigned long DWORD;
-typedef unsigned short WORD;
+#include "../../platform/wintypes.h"
 
 class Scale2x: public Filter {
     public:

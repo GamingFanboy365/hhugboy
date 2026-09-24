@@ -26,6 +26,8 @@
 #include <string.h>
 #include <sys/stat.h>
 
+#include "platform/compat.h"
+
 #include "ui/strings.h"
 
 #include "config.h"
@@ -71,7 +73,13 @@ bool gb_system::loadrom_zip(const wchar_t* filename)
 {
 
    char mFilename[ROM_FILENAME_SIZE];
+#ifdef _WIN32
    wcstombs(mFilename,filename,ROM_FILENAME_SIZE);
+#else
+   // filenames are UTF-8 regardless of the locale
+   strncpy(mFilename,wideToUtf8(filename).c_str(),ROM_FILENAME_SIZE-1);
+   mFilename[ROM_FILENAME_SIZE-1] = 0;
+#endif
    unzFile unz = unzOpen(mFilename);
    if(unz == NULL)
    {
@@ -240,7 +248,7 @@ bool gb_system::loadrom_file(const wchar_t* filename,int offset)
 
 bool gb_system::load_rom(const wchar_t* filename,int offset)
 {
-    memset(rom_filename,0,ROM_FILENAME_SIZE);
+    memset(rom_filename,0,sizeof(rom_filename));
 
     romloaded = false;
 
@@ -257,7 +265,7 @@ bool gb_system::load_rom(const wchar_t* filename,int offset)
     wchar_t temp2[ROM_FILENAME_SIZE];
 
     // Get filename
-    wchar_t* temp = wcsrchr(filename,L'\\'); // find last '\'
+    const wchar_t* temp = wcsrchr(filename,HHUGBOY_PATH_SEPARATOR); // find last path separator
     if(temp == NULL)
     {
         wcscpy(temp2,filename);
@@ -267,7 +275,7 @@ bool gb_system::load_rom(const wchar_t* filename,int offset)
     else
         temp += 1;
 
-    wchar_t* temp3 = wcsrchr(temp,L'.'); // find last '.'
+    const wchar_t* temp3 = wcsrchr(temp,L'.'); // find last '.'
     if(temp3 == NULL) // no extension
         wcsncpy(rom_filename,temp,wcslen(temp));
     else

@@ -1,9 +1,6 @@
 /*
    hhugboy Game Boy emulator
-   copyright 2013 taizou
-
-   Based on GEST
-   Copyright (C) 2003-2010 TM
+   Copyright (C) 2026 the hhugboy contributors
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -20,32 +17,18 @@
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef DIRECTINPUT_H
-#define DIRECTINPUT_H
+// Tiny built-in 5x7 bitmap font for on-screen messages, so the SDL frontend
+// doesn't need a font rendering library. Lowercase letters are drawn as
+// uppercase.
 
-#define WIN32_LEAN_AND_MEAN
-#define UNICODE 
+#ifndef HHUGBOY_SDLFONT_H
+#define HHUGBOY_SDLFONT_H
 
-#include <windows.h>
+const int FONT_GLYPH_WIDTH = 5;
+const int FONT_GLYPH_HEIGHT = 7;
+const int FONT_GLYPH_ADVANCE = 6;
 
-extern HINSTANCE hinst;
-extern HWND hwnd;
+// Returns whether the pixel at (x, y) of the character's glyph is set
+bool fontPixel(wchar_t character, int x, int y);
 
-#define SafeRelease(x) if(x) { x->Release(), x=NULL; }
-
-#include "input.h"
-
-bool Init_DI();
-void Kill_DI();
-
-bool Init_DI_change(HWND);
-bool Init_DI_change_joy(HWND);
-void Kill_DI_change();
-
-int check_change_keys(int, int);
-extern const wchar_t* key_names[256];
-int check_change_joypad(int index);
-
-
-
-#endif
+#endif // HHUGBOY_SDLFONT_H

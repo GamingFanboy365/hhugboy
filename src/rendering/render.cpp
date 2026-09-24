@@ -23,9 +23,15 @@
 #include "../GB.h"
 #include <cstring>
 
+// The inline assembly below is 32-bit x86 only; other targets use the C versions
+#if defined(__GNUC__) && defined(__i386__)
+#define HHUGBOY_ASM_RENDERING
 bool asmRendering = true;
+#else
+bool asmRendering = false;
+#endif
 
-void fill_gfx_buffers(unsigned long val)
+void fill_gfx_buffers(DWORD val)
 {
    int count = 160*144;
       
@@ -44,7 +50,7 @@ void fill_gfx_buffers(unsigned long val)
    }
 }
 
-void LCDoff_fill_gfx_buffer(unsigned long val)
+void LCDoff_fill_gfx_buffer(DWORD val)
 {
    int count = 160*144;
 
@@ -57,9 +63,10 @@ void LCDoff_fill_gfx_buffer(unsigned long val)
    }
 }
 
-void fill_line16(unsigned short* adr, unsigned long val, int count)
+void fill_line16(unsigned short* adr, DWORD val, int count)
 {
     if ( asmRendering ) {
+#ifdef HHUGBOY_ASM_RENDERING
         __asm__ __volatile__ 
         (    
           "cld\n"  
@@ -68,6 +75,7 @@ void fill_line16(unsigned short* adr, unsigned long val, int count)
           : "=c" (count), "=D" (val)  // dummy values, because register is corrupted
           : "c" (count>>1), "a" (val), "D" (adr)
           : "memory" );
+#endif
     } else {
        for(int x=0;x<count;x++) {
 	       adr[x] = val;
@@ -75,9 +83,10 @@ void fill_line16(unsigned short* adr, unsigned long val, int count)
     }
 }
 
-void fill_line32(unsigned long* adr, unsigned long val, int count)
+void fill_line32(DWORD* adr, DWORD val, int count)
 {            
 	if ( asmRendering ) {
+#ifdef HHUGBOY_ASM_RENDERING
 	   __asm__ __volatile__ 
        (       
           "cld\n"  
@@ -86,6 +95,7 @@ void fill_line32(unsigned long* adr, unsigned long val, int count)
           : "=c" (count), "=D" (val)  // dummy values, because register is corrupted
           : "c" (count), "a" (val), "D" (adr)
           : "memory" );
+#endif
 	} else {
     	for(int x=0;x<count;x++) {
     		adr[x] = val;
@@ -96,6 +106,7 @@ void fill_line32(unsigned long* adr, unsigned long val, int count)
 void copy_line16(unsigned short* target, unsigned short* src, int count)
 {
     if ( asmRendering ) {
+#ifdef HHUGBOY_ASM_RENDERING
        unsigned long dummy;
        __asm__ __volatile__
        (
@@ -105,14 +116,16 @@ void copy_line16(unsigned short* target, unsigned short* src, int count)
           : "=c" (count), "=D" (dummy), "=S" (dummy)  // dummy values, because register is corrupted
           : "c" (count>>1), "S" (src), "D" (target)
           : "memory" );
+#endif
     } else {
         memcpy(target,src,count*sizeof(short));
     }
 }
 
-void copy_line32(unsigned long* target, unsigned long* src, int count)
+void copy_line32(DWORD* target, DWORD* src, int count)
 {
     if ( asmRendering ) {
+#ifdef HHUGBOY_ASM_RENDERING
        unsigned long dummy;
        __asm__ __volatile__
        (
@@ -122,8 +135,9 @@ void copy_line32(unsigned long* target, unsigned long* src, int count)
           : "=c" (count), "=D" (dummy), "=S" (dummy)  // dummy values, because register is corrupted
           : "c" (count), "S" (src), "D" (target)
           : "memory" );
+#endif
     } else {
-        memcpy(target,src,count*sizeof(long));
+        memcpy(target,src,count*sizeof(DWORD));
     	return;
     }
 

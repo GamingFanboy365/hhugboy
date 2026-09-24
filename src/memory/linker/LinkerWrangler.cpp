@@ -4,7 +4,17 @@
 
 #include "stdio.h"
 
+#ifdef _WIN32
 #include "windows.h"
+#define LIBGBLINK_NAME "libgblink.dll"
+#define loadLinkerLibrary(name) LoadLibrary(name)
+#define linkerLibrarySymbol(lib, name) GetProcAddress(lib, name)
+#else
+#include <dlfcn.h>
+#define LIBGBLINK_NAME "libgblink.so"
+#define loadLinkerLibrary(name) dlopen(name, RTLD_NOW)
+#define linkerLibrarySymbol(lib, name) dlsym(lib, name)
+#endif
 
 bool LinkerWrangler::readBank0 = false;
 byte LinkerWrangler::bank0[0x4000];
@@ -99,23 +109,23 @@ bool LinkerWrangler::initLinker()
 {
     if (!libLoaded) {
 
-        libgblink = LoadLibrary("libgblink.dll");
+        libgblink = loadLinkerLibrary(LIBGBLINK_NAME);
         if (libgblink == nullptr) {
-            LinkerLog::addMessage("Unable to load libgblink.dll");
+            LinkerLog::addMessage("Unable to load " LIBGBLINK_NAME);
             return false;
         }
 
-        libSetLogger = (LibSetLogger)GetProcAddress(libgblink, "SetLogger");
-        libInitLinker = (LibInitLinker)GetProcAddress(libgblink, "InitLinker");
-        libDeinitLinker = (LibDeinitLinker)GetProcAddress(libgblink, "DeinitLinker");
-        libReadByte = (LibReadByte)GetProcAddress(libgblink, "ReadByte");
-        libReadBlock = (LibReadBlock)GetProcAddress(libgblink, "ReadBlock");
-        libWriteByte = (LibWriteByte)GetProcAddress(libgblink, "WriteByte");
-        libIsLinkerActive = (LibIsLinkerActive)GetProcAddress(libgblink, "IsLinkerActive");
-        libGetBank0 = (LibGetBank0)GetProcAddress(libgblink, "GetBank0");
+        libSetLogger = (LibSetLogger)linkerLibrarySymbol(libgblink, "SetLogger");
+        libInitLinker = (LibInitLinker)linkerLibrarySymbol(libgblink, "InitLinker");
+        libDeinitLinker = (LibDeinitLinker)linkerLibrarySymbol(libgblink, "DeinitLinker");
+        libReadByte = (LibReadByte)linkerLibrarySymbol(libgblink, "ReadByte");
+        libReadBlock = (LibReadBlock)linkerLibrarySymbol(libgblink, "ReadBlock");
+        libWriteByte = (LibWriteByte)linkerLibrarySymbol(libgblink, "WriteByte");
+        libIsLinkerActive = (LibIsLinkerActive)linkerLibrarySymbol(libgblink, "IsLinkerActive");
+        libGetBank0 = (LibGetBank0)linkerLibrarySymbol(libgblink, "GetBank0");
         if (!libSetLogger || !libInitLinker || !libDeinitLinker || !libReadByte || !libReadBlock
             || !libWriteByte || !libIsLinkerActive || !libGetBank0) {
-            LinkerLog::addMessage("Unable to link with libgblink.dll");
+            LinkerLog::addMessage("Unable to link with " LIBGBLINK_NAME);
             return false;
         }
 

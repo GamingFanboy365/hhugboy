@@ -1,11 +1,10 @@
 cmake_minimum_required(VERSION 3.6)
 project(hhugboy)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc -static-libstdc++ -std=c++11 -U__STRICT_ANSI__ -mwindows")
-
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
 
-set(SOURCE_FILES
+# Emulator core, shared by all platforms
+set(CORE_SOURCE_FILES
         src/rendering/filters/Filter.cpp
         src/rendering/filters/Filter.h
         src/rendering/filters/filters.cpp
@@ -14,14 +13,10 @@ set(SOURCE_FILES
         src/rendering/filters/scale2x.h
         src/rendering/filters/scale3x.cpp
         src/rendering/filters/scale3x.h
-        src/rendering/directdraw.cpp
-        src/rendering/directdraw.h
         src/rendering/palette.cpp
         src/rendering/palette.h
         src/rendering/render.cpp
         src/rendering/render.h
-        src/rendering/renderer.cpp
-        src/rendering/renderer.h
         src/zlib/unzip.c
         src/zlib/unzip.h
         src/cheats.cpp
@@ -37,10 +32,9 @@ set(SOURCE_FILES
         src/debug.h
         src/devices.cpp
         src/devices.h
-        src/ui/dialogs.cpp
-        src/ui/dialogs.h
-        src/directinput.cpp
-        src/directinput.h
+        src/globals.cpp
+        src/input.cpp
+        src/input.h
         src/GB.cpp
         src/GB.h
         src/GB_gfx.cpp
@@ -50,12 +44,8 @@ set(SOURCE_FILES
         src/memory/Cartridge.cpp
         src/memory/GB_mem.cpp
         src/GB_sound.cpp
-        src/ui/keynames.h
         src/licnames.h
-        src/main.cpp
         src/main.h
-        src/ui/menu.cpp
-        src/ui/menu.rc
         src/mainloop.cpp
         src/mainloop.h
         src/ui/menu.h
@@ -68,7 +58,6 @@ set(SOURCE_FILES
         src/ui/strings.cpp
         src/ui/strings.h
         src/types.h
-        src/version.rc
         src/memory/mbc/BasicMbc.cpp
         src/memory/mbc/BasicMbc.h
         src/memory/mbc/MbcNin3.cpp
@@ -120,21 +109,11 @@ set(SOURCE_FILES
         src/memory/mbc/MbcUnlNtOld2.h
         src/memory/CartDetection.h
         src/memory/CartDetection.cpp
-        src/ui/menuactions.cpp
-        src/ui/menuactions.h
-        src/ui/keyactions.cpp
-        src/ui/keyactions.h
-        src/ui/window.cpp
         src/ui/window.h
         src/memory/mbc/MbcUnlNtNew.cpp
         src/memory/mbc/MbcUnlNtNew.h
         src/memory/GbxParser.cpp
         src/memory/GbxParser.h
-        src/ui/dialogs/MemorySearcher.h
-        src/ui/dialogs/MemorySearcher.rc
-        src/ui/dialogs/MemorySearcher.cpp
-        src/rendering/DirectDrawStuff.cpp
-        src/rendering/DirectDrawStuff.h
         src/memory/mbc/MbcUnlPokeJadeDia.cpp
         src/memory/mbc/MbcUnlPokeJadeDia.h
         src/memory/mbc/MbcUnlWisdomTree.cpp
@@ -153,37 +132,119 @@ set(SOURCE_FILES
         src/memory/mbc/MbcUnlNewGbHk.h
         src/memory/mbc/MbcUnlGgb81.cpp
         src/memory/mbc/MbcUnlGgb81.h
-        src/ui/dialogs/LinkerLog.cpp
         src/ui/dialogs/LinkerLog.h
-        src/ui/dialogs/LinkerLog.rc
         src/memory/linker/LinkerWrangler.cpp
         src/memory/linker/LinkerWrangler.h
         src/memory/mbc/MbcUnlVf001.cpp
         src/memory/mbc/MbcUnlVf001.h
         src/memory/mbc/MbcUnlSkobLee8.cpp
         src/memory/mbc/MbcUnlSkobLee8.h
+        src/platform/compat.cpp
+        src/platform/compat.h
+        src/platform/wintypes.h
+        src/platform/dikcodes.h
 )
 
-include_directories(
-        includes
-        includes/zlib
-        includes/libpng12
-        includes/fmod
-        includes/directx-aug2009
-        includes/png++-0.2.5
-)
+if(WIN32)
 
-link_libraries(
-        "${CMAKE_SOURCE_DIR}/libs/libfmod.a"
-        "${CMAKE_SOURCE_DIR}/libs/libwinmm.a"
-        "${CMAKE_SOURCE_DIR}/libs/libdinput.a"
-        "${CMAKE_SOURCE_DIR}/libs/libddraw.a"
-        "${CMAKE_SOURCE_DIR}/libs/libdinput.a"
-        "${CMAKE_SOURCE_DIR}/libs/libdinput8.a"
-        "${CMAKE_SOURCE_DIR}/libs/libdxguid.a"
-        "${CMAKE_SOURCE_DIR}/libs/libpng12.dll.a"
-        "${CMAKE_SOURCE_DIR}/libs/libz.a"
-)
+    # Windows frontend: Win32 UI, DirectDraw, DirectInput and FMOD, using the bundled libraries
+
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc -static-libstdc++ -std=c++11 -U__STRICT_ANSI__ -mwindows")
+
+    set(PLATFORM_SOURCE_FILES
+            src/rendering/directdraw.cpp
+            src/rendering/directdraw.h
+            src/rendering/renderer.cpp
+            src/rendering/renderer.h
+            src/ui/dialogs.cpp
+            src/ui/dialogs.h
+            src/directinput.cpp
+            src/directinput.h
+            src/ui/keynames.h
+            src/main.cpp
+            src/ui/menu.cpp
+            src/ui/menu.rc
+            src/version.rc
+            src/ui/menuactions.cpp
+            src/ui/menuactions.h
+            src/ui/keyactions.cpp
+            src/ui/keyactions.h
+            src/ui/window.cpp
+            src/ui/dialogs/MemorySearcher.h
+            src/ui/dialogs/MemorySearcher.rc
+            src/ui/dialogs/MemorySearcher.cpp
+            src/rendering/DirectDrawStuff.cpp
+            src/rendering/DirectDrawStuff.h
+            src/ui/dialogs/LinkerLog.cpp
+            src/ui/dialogs/LinkerLog.rc
+            src/sound_fmod.cpp
+    )
+
+    include_directories(
+            includes
+            includes/zlib
+            includes/libpng12
+            includes/fmod
+            includes/directx-aug2009
+            includes/png++-0.2.5
+    )
+
+    link_libraries(
+            "${CMAKE_SOURCE_DIR}/libs/libfmod.a"
+            "${CMAKE_SOURCE_DIR}/libs/libwinmm.a"
+            "${CMAKE_SOURCE_DIR}/libs/libdinput.a"
+            "${CMAKE_SOURCE_DIR}/libs/libddraw.a"
+            "${CMAKE_SOURCE_DIR}/libs/libdinput.a"
+            "${CMAKE_SOURCE_DIR}/libs/libdinput8.a"
+            "${CMAKE_SOURCE_DIR}/libs/libdxguid.a"
+            "${CMAKE_SOURCE_DIR}/libs/libpng12.dll.a"
+            "${CMAKE_SOURCE_DIR}/libs/libz.a"
+    )
+
+else()
+
+    # SDL2 frontend for Linux and other platforms, using the system's libraries
+
+    set(CMAKE_CXX_STANDARD 11)
+
+    find_package(SDL2 REQUIRED)
+    find_package(PNG REQUIRED)
+    find_package(ZLIB REQUIRED)
+
+    add_definitions(-DHHUGBOY_SDL)
+
+    set(PLATFORM_SOURCE_FILES
+            src/platform/sdl/SdlAudio.cpp
+            src/platform/sdl/SdlFont.cpp
+            src/platform/sdl/SdlFont.h
+            src/platform/sdl/SdlFrontend.h
+            src/platform/sdl/SdlInput.cpp
+            src/platform/sdl/SdlMain.cpp
+            src/platform/sdl/SdlRenderer.cpp
+            src/platform/sdl/SdlRenderer.h
+    )
+
+    include_directories(
+            includes/png++-0.2.5
+    )
+
+    if(TARGET SDL2::SDL2)
+        set(HHUGBOY_SDL2_LIBRARIES SDL2::SDL2)
+    else()
+        include_directories(${SDL2_INCLUDE_DIRS})
+        set(HHUGBOY_SDL2_LIBRARIES ${SDL2_LIBRARIES})
+    endif()
+
+    link_libraries(
+            ${HHUGBOY_SDL2_LIBRARIES}
+            PNG::PNG
+            ZLIB::ZLIB
+            ${CMAKE_DL_LIBS}
+    )
+
+endif()
+
+set(SOURCE_FILES ${CORE_SOURCE_FILES} ${PLATFORM_SOURCE_FILES})
 
 add_executable(hhugboy ${SOURCE_FILES})
 set_target_properties(hhugboy PROPERTIES LINKER_LANGUAGE CXX)

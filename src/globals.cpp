@@ -1,6 +1,6 @@
 /*
    hhugboy Game Boy emulator
-   copyright 2013 taizou
+   copyright 2013-18 taizou
 
    Based on GEST
    Copyright (C) 2003-2010 TM
@@ -20,32 +20,37 @@
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef DIRECTINPUT_H
-#define DIRECTINPUT_H
+// Emulator state shared by all frontends
 
-#define WIN32_LEAN_AND_MEAN
-#define UNICODE 
+#include <string>
 
-#include <windows.h>
+using namespace std;
 
-extern HINSTANCE hinst;
-extern HWND hwnd;
+#include "main.h"
+#include "GB.h"
 
-#define SafeRelease(x) if(x) { x->Release(), x=NULL; }
+gb_system* GB = NULL;
+gb_system* GB1 = NULL;
+gb_system* GB2 = NULL;
 
-#include "input.h"
+const wchar_t* prg_version = L"1.4.2";
 
-bool Init_DI();
-void Kill_DI();
+wchar_t w_emu_title[] = L"hhugboy";
 
-bool Init_DI_change(HWND);
-bool Init_DI_change_joy(HWND);
-void Kill_DI_change();
+Palette palette;
 
-int check_change_keys(int, int);
-extern const wchar_t* key_names[256];
-int check_change_joypad(int index);
+// Options ----------------------------------------------
+bool paused = false;
+bool menupause = false;
 
+int control_pressed = 0; // control key pressed 
 
+int current_controller = 0; // currently changing which controller? 
 
-#endif
+int speedup = 0;
+
+program_configuration* options = NULL;
+
+wstring gb1_loaded_file_name;
+
+int ramsize[10] = { 0, 2, 8, 32, 128, 64,64,64,8, 256 }; // KBytes

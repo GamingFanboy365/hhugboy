@@ -34,8 +34,7 @@
 #define WIN32_LEAN_AND_MEAN
 #define UNICODE 
 
-#include <windows.h>
-#include <winbase.h>
+#include "platform/compat.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -108,12 +107,12 @@ bool gb_system::save_state()
    if(this == GB1)
    {
       save_state_slot =  GB1_state_slot;
-      swprintf(file_ext,L".st%d",GB1_state_slot);
+      wsprintfW(file_ext,L".st%d",GB1_state_slot);
       wcscat(save_filename,file_ext);
    } else
    {
       save_state_slot = GB2_state_slot;
-      swprintf(file_ext,L".s2%d",GB2_state_slot);
+      wsprintfW(file_ext,L".s2%d",GB2_state_slot);
       wcscat(save_filename,file_ext);
    }
 
@@ -306,12 +305,12 @@ bool gb_system::load_state()
    if(this == GB1)
    {
       save_state_slot =  GB1_state_slot;
-      swprintf(file_ext,L".st%d",GB1_state_slot);
+      wsprintfW(file_ext,L".st%d",GB1_state_slot);
       wcscat(save_filename,file_ext);
    } else
    {
       save_state_slot = GB2_state_slot;
-      swprintf(file_ext,L".s2%d",GB2_state_slot);
+      wsprintfW(file_ext,L".s2%d",GB2_state_slot);
       wcscat(save_filename,file_ext);
    }
    

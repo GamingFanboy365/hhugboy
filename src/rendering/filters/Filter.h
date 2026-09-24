@@ -1,7 +1,6 @@
 #include "../../options.h"
 
-typedef unsigned long DWORD;
-typedef unsigned short WORD;
+#include "../../platform/wintypes.h"
 
 #ifndef FILTER_H
 #define FILTER_H

@@ -1,5 +1,5 @@
 hhugboy v1.4.2
-a Game Boy/Game Boy Color emulator for Windows
+a Game Boy/Game Boy Color emulator for Windows and Linux
 by taizou (cactusgunman@gmail.com)
 https://hhug.me/
 https://github.com/tzlion/hhugboy
@@ -153,6 +153,42 @@ https://github.com/tzlion/hhugboy
                            F12        Screenshot GB1
                            Ctrl+F12   Screenshot GB2
                            0~9, /, =  Change GBC palette for mono games
+
+[ LINUX ]- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+ hhugboy can also be built as a native Linux program, using SDL2 for video,
+ sound and input. The emulation is the same code as the Windows version. There
+ is no menu bar or dialogs on Linux yet, so settings are changed by editing
+ hhugboy.cfg. The file format and key codes are the same as on Windows, so a
+ config file can be copied between the two.
+
+ To build it you need CMake, a C++11 compiler and the SDL2, libpng and zlib
+ development packages (on Debian or Ubuntu: sudo apt install cmake g++
+ libsdl2-dev libpng-dev zlib1g-dev). Then run these from the source folder:
+
+   cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+   cmake --build build --target hhugboy
+
+ This puts the hhugboy program in the bin folder. Start it with a ROM, e.g.
+ bin/hhugboy game.gb, or drop a ROM onto its window. The keys are the same as
+ above, except that Ctrl+D turns printing of debug messages to the terminal
+ on and off, and Ctrl+L connects or disconnects the linker (libgblink.so)
+ with its messages going to the terminal too.
+
+ Saves, save states and the config file are kept next to the program like on
+ Windows, or in ~/.local/share/hhugboy if that folder can't be written to.
+ Bootstrap ROMs (dmg_boot.bin, cgb_boot.bin) go in the same place.
+
+ Command line options, mainly useful for debugging and automated testing:
+   --debug-log        print debug messages to the terminal
+   --frames N         exit after running N frames
+   --screenshot FILE  save a PNG screenshot to FILE before exiting
+   --unthrottled      run as fast as possible
+   --no-dialogs       only print errors to the terminal
+
+ For example, to run a test ROM without a display and keep a screenshot:
+   SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy bin/hhugboy --frames 300 \
+       --screenshot result.png test.gb
 
 [ CHEATS ] - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

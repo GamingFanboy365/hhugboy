@@ -1,9 +1,6 @@
 /*
    hhugboy Game Boy emulator
-   copyright 2013 taizou
-
-   Based on GEST
-   Copyright (C) 2003-2010 TM
+   Copyright (C) 2026 the hhugboy contributors
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -20,32 +17,29 @@
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef DIRECTINPUT_H
-#define DIRECTINPUT_H
+// Functions shared between the parts of the SDL frontend
 
-#define WIN32_LEAN_AND_MEAN
-#define UNICODE 
+#ifndef HHUGBOY_SDLFRONTEND_H
+#define HHUGBOY_SDLFRONTEND_H
 
-#include <windows.h>
+union SDL_Event;
 
-extern HINSTANCE hinst;
-extern HWND hwnd;
+// Audio (SdlAudio.cpp)
+bool sdlAudioInit();
+void sdlAudioShutdown();
+void sdlAudioSetPaused(bool paused);
+// Whether the audio output is currently what limits the emulation speed
+bool sdlAudioIsPacing();
+// When false, audio that would have to wait for the output is dropped instead
+void sdlAudioSetThrottle(bool throttle);
 
-#define SafeRelease(x) if(x) { x->Release(), x=NULL; }
+// Input (SdlInput.cpp)
+void sdlInputInit();
+void sdlInputShutdown();
+void sdlInputHandleEvent(const SDL_Event& event);
 
-#include "input.h"
+// Messages (SdlMain.cpp)
+extern bool sdlDebugLog;
+extern bool sdlShowDialogs;
 
-bool Init_DI();
-void Kill_DI();
-
-bool Init_DI_change(HWND);
-bool Init_DI_change_joy(HWND);
-void Kill_DI_change();
-
-int check_change_keys(int, int);
-extern const wchar_t* key_names[256];
-int check_change_joypad(int index);
-
-
-
-#endif
+#endif // HHUGBOY_SDLFRONTEND_H

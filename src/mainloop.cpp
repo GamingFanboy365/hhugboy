@@ -24,6 +24,8 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "platform/compat.h"
+
 #include <iostream>
 using namespace std;
 #include "main.h"
@@ -40,7 +42,7 @@ using namespace std;
 #include "devices.h"
 #include "GB.h"
 #include "memory/Cartridge.h"
-#include "directinput.h"
+#include "input.h"
 #include "config.h"
 
 #include "ui/strings.h"

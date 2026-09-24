@@ -33,7 +33,7 @@
 #include "../state.h"
 #include "../cpu.h"
 #include "../SGB.h"
-#include "../directinput.h"
+#include "../input.h"
 #include "../sound.h"
 #include "../GB.h"
 #include "../mainloop.h"

@@ -1,9 +1,6 @@
 /*
    hhugboy Game Boy emulator
-   copyright 2013 taizou
-
-   Based on GEST
-   Copyright (C) 2003-2010 TM
+   Copyright (C) 2026 the hhugboy contributors
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -20,32 +17,21 @@
    51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef DIRECTINPUT_H
-#define DIRECTINPUT_H
+// WORD/DWORD are used throughout the renderer as 16/32-bit pixel types.
+// On Windows they have to match windows.h exactly (DWORD is unsigned long,
+// which is 32 bits there), but on LP64 platforms like x86_64 Linux an
+// unsigned long is 64 bits, so use the fixed-width types instead.
 
-#define WIN32_LEAN_AND_MEAN
-#define UNICODE 
+#ifndef HHUGBOY_WINTYPES_H
+#define HHUGBOY_WINTYPES_H
 
-#include <windows.h>
-
-extern HINSTANCE hinst;
-extern HWND hwnd;
-
-#define SafeRelease(x) if(x) { x->Release(), x=NULL; }
-
-#include "input.h"
-
-bool Init_DI();
-void Kill_DI();
-
-bool Init_DI_change(HWND);
-bool Init_DI_change_joy(HWND);
-void Kill_DI_change();
-
-int check_change_keys(int, int);
-extern const wchar_t* key_names[256];
-int check_change_joypad(int index);
-
-
-
+#ifdef _WIN32
+typedef unsigned long DWORD;
+typedef unsigned short WORD;
+#else
+#include <stdint.h>
+typedef uint32_t DWORD;
+typedef uint16_t WORD;
 #endif
+
+#endif // HHUGBOY_WINTYPES_H

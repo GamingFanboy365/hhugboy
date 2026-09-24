@@ -22,20 +22,19 @@
 #ifndef RENDER_H
 #define RENDER_H
 
-typedef unsigned short WORD;
-typedef unsigned long DWORD;
+#include "../platform/wintypes.h"
 
-void fill_gfx_buffers(unsigned long val);
+void fill_gfx_buffers(DWORD val);
 
-void LCDoff_fill_gfx_buffer(unsigned long val);
+void LCDoff_fill_gfx_buffer(DWORD val);
 
-void fill_line16(unsigned short* adr, unsigned long val, int count);
+void fill_line16(unsigned short* adr, DWORD val, int count);
 
-void fill_line32(unsigned long* adr, unsigned long val, int count);
+void fill_line32(DWORD* adr, DWORD val, int count);
 
 void copy_line16(unsigned short* target, unsigned short* src, int count);
 
-void copy_line32(unsigned long* target, unsigned long* src, int count);
+void copy_line32(DWORD* target, DWORD* src, int count);
 
 extern const unsigned short GBC_DMGBG_palettes[12][4];
 extern const unsigned short GBC_DMGOBJ0_palettes[12][4];

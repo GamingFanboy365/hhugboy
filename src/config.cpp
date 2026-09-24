@@ -23,17 +23,20 @@
 #define UNICODE
 #define WIN32_LEAN_AND_MEAN
 
-#include <windows.h>
+#include "platform/compat.h"
 #include <stdio.h>
 
+#ifdef _WIN32
 #define DIRECTINPUT_VERSION 0x0700
 #include <dinput.h>
+#else
+#include "platform/dikcodes.h"
+#endif
 
 #include <iostream>
 #include <fstream>
 
 using namespace std;
-#include "rendering/directdraw.h"
 
 #include "rom.h"
 #include "debug.h"
@@ -416,15 +419,11 @@ void read_comment_line(ifstream& in)
 void getlinew(ifstream& file, wstring& stringWide) {
     string stringUTF8;
     getline(file, stringUTF8);
-    auto sizeNeeded = MultiByteToWideChar(CP_UTF8, 0, &stringUTF8[0], stringUTF8.size(), NULL, 0);
-    stringWide.resize(sizeNeeded);
-    MultiByteToWideChar                  (CP_UTF8, 0, &stringUTF8[0], stringUTF8.size(), &stringWide[0], sizeNeeded);
+    stringWide = utf8ToWide(stringUTF8);
 }
 
 void putlinew(ostream& file, const wstring& stringWide) {
-    auto sizeNeeded = WideCharToMultiByte(CP_UTF8, 0, &stringWide[0], stringWide.size(), NULL, 0, NULL, NULL);
-    string stringUTF8(sizeNeeded, 0);
-    WideCharToMultiByte                  (CP_UTF8, 0, &stringWide[0], stringWide.size(), &stringUTF8[0], sizeNeeded, NULL, NULL);
+    string stringUTF8 = wideToUtf8(stringWide);
     file.write(stringUTF8.c_str(), stringUTF8.size());
 }
 
@@ -782,9 +781,9 @@ bool read_config_file()
 {
    SetCurrentDirectory(options->program_directory.c_str());
 
-   options->save_directory = options->program_directory + L"\\save";
+   options->save_directory = options->program_directory + HHUGBOY_PATH_SEPARATOR_STR L"save";
 
-   options->state_directory = options->program_directory + L"\\state";
+   options->state_directory = options->program_directory + HHUGBOY_PATH_SEPARATOR_STR L"state";
 
    options->rom_directory = options->program_directory;
 
